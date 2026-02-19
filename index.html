@@ -1,51 +1,46 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Портфолио Софии Коченко</title>
-  <style>
-    /* Убираем все отступы и запрещаем прокрутку самого сайта */
-    body,
-    html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      background-color: #333;
-      /* Темный фон для красоты */
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Портфолио Софии Коченко</title>
+    <style>
+        /* Полное обнуление отступов */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #333; /* Темный фон, пока грузится файл */
+        }
 
-    /* Контейнер для PDF, который занимает 100% экрана */
-    .pdf-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+        /* Обертка для корректного отображения */
+        .container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
-    /* Адаптивность для мобильных устройств */
-    @media screen and (max-width: 768px) {
-      .pdf-container {
-        height: 100vh;
-        width: 100vw;
-      }
-    }
-  </style>
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
-
 <body>
 
-  <iframe src="portfolio.pdf" class="pdf-container" type="application/pdf">
-    <p>Ваш браузер не поддерживает просмотр PDF.
-      <a href="portfolio.pdf">Скачать файл</a>
-    </p>
-  </iframe>
+    <div class="container">
+        <iframe 
+            src="https://docs.google.com/viewer?url=https://horsinc.github.io/my-portfolio/portfolio.pdf&embedded=true">
+        </iframe>
+    </div>
 
 </body>
-
 </html>
