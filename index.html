@@ -25,16 +25,15 @@
     <iframe id="pdf-content" src=""></iframe>
 
     <script>
-        // Твоя прямая ссылка на файл на GitHub
-        const fileUrl = "https://horsinc.github.io/my-portfolio/portfolio.pdf";
         const iframe = document.getElementById('pdf-content');
+        // Ссылка на ваш Google Диск (режим просмотра)
+        const googleDriveUrl = "https://drive.google.com/file/d/1lOqlA6w_ns0AwPeGuBGWFOX-aYuEi1Xa/view?usp=sharing";
 
-        // Проверяем ширину экрана (меньше 768px — это мобильные)
         if (window.innerWidth <= 768) {
-            // ДЛЯ ТЕЛЕФОНОВ: Открываем через Google Viewer (режим просмотра)
-            iframe.src = "https://drive.google.com/file/d/1lOqlA6w_ns0AwPeGuBGWFOX-aYuEi1Xa/preview";
+            // ДЛЯ ТЕЛЕФОНОВ: Мгновенный переход по ссылке на Гугл Диск
+            window.location.href = googleDriveUrl;
         } else {
-            // ДЛЯ КОМПЬЮТЕРОВ: Открываем файл напрямую (как и было)
+            // ДЛЯ КОМПЬЮТЕРОВ: Оставляем отображение внутри сайта
             iframe.src = "portfolio.pdf";
         }
     </script>
