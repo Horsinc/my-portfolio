@@ -4,43 +4,91 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Портфолио Софии Коченко</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
-        /* Полное обнуление отступов */
         body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background-color: #333; /* Темный фон, пока грузится файл */
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            background-color: #202020; font-family: sans-serif;
         }
 
-        /* Обертка для корректного отображения */
-        .container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
+        /* Версия для ПК: твой старый добрый iframe */
+        #desktop-viewer {
+            display: none;
+            width: 100%; height: 100vh; border: none;
         }
 
-        iframe {
+        /* Версия для мобилок: контейнер для отрисовки страниц */
+        #mobile-viewer {
+            display: none;
             width: 100%;
-            height: 100%;
-            border: none;
+            overflow-y: auto;
+            background-color: #333;
+        }
+        
+        canvas {
+            display: block;
+            width: 100% !important; /* Растягиваем на всю ширину экрана */
+            height: auto !important;
+            margin-bottom: 10px; /* Отступ между страницами */
+        }
+
+        /* Логика переключения: ПК (от 768px) / Мобилка */
+        @media screen and (min-width: 768px) {
+            #desktop-viewer { display: block; }
+        }
+        @media screen and (max-width: 767px) {
+            #mobile-viewer { display: block; }
+        }
+
+        .loading-text {
+            color: white; text-align: center; padding: 50px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <iframe 
-            src="https://docs.google.com/viewer?url=https://horsinc.github.io/my-portfolio/portfolio.pdf&embedded=true">
-        </iframe>
+    <iframe id="desktop-viewer" src="portfolio.pdf"></iframe>
+
+    <div id="mobile-viewer">
+        <div id="loading" class="loading-text">Загрузка портфолио...</div>
     </div>
 
+    <script>
+        const url = 'portfolio.pdf'; // Путь к файлу
+
+        // Настройки PDF.js
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // Проверяем, мобильное ли устройство
+        if (window.innerWidth < 768) {
+            const container = document.getElementById('mobile-viewer');
+            
+            pdfjsLib.getDocument(url).promise.then(pdf => {
+                document.getElementById('loading').style.display = 'none';
+                
+                // Рендерим каждую страницу по очереди
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    pdf.getPage(pageNum).then(page => {
+                        const viewport = page.getViewport({ scale: 2 }); // Качество 2x для четкости
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        container.appendChild(canvas);
+
+                        page.render({
+                            canvasContext: context,
+                            viewport: viewport
+                        });
+                    });
+                }
+            }).catch(err => {
+                document.getElementById('loading').innerHTML = "Ошибка загрузки. <br><a href='portfolio.pdf' style='color:white'>Открыть PDF напрямую</a>";
+                console.error(err);
+            });
+        }
+    </script>
 </body>
 </html>
