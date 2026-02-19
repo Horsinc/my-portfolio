@@ -1,120 +1,55 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>София Коченко — Портфолио</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    
-    <style>
-        body, html {
-            margin: 0; padding: 0; height: 100%; width: 100%;
-            background-color: #121212; /* Глубокий темный фон */
-            font-family: -apple-system, system-ui, sans-serif;
-            overflow-x: hidden;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Портфолио Софии Коченко</title>
+  <style>
+    /* Убираем все лишнее, чтобы экран не дергался */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: #1a1a1a;
+    }
 
-        /* Десктопная версия */
-        #pc-viewer {
-            display: none;
-            width: 100%; height: 100vh; border: none;
-        }
+    /* Контейнер на весь экран */
+    .pdf-viewer {
+      width: 100%;
+      height: 100dvh;
+      /* Используем динамическую высоту для мобилок */
+      border: none;
+      display: block;
+    }
 
-        /* Мобильная версия */
-        #mobile-viewer {
-            display: none;
-            width: 100%;
-            min-height: 100vh;
-        }
-        
-        canvas {
-            display: block;
-            width: 100% !important;
-            height: auto !important;
-        }
-
-        /* Стили для загрузки и ошибок */
-        #status-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: white; z-index: 10; background: #121212;
-        }
-
-        .loader {
-            border: 3px solid #333; border-top: 3px solid #fff;
-            border-radius: 50%; width: 30px; height: 30px;
-            animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .btn-fix {
-            display: none; padding: 15px 30px; background: #fff;
-            color: #000; text-decoration: none; border-radius: 50px;
-            font-weight: bold; margin-top: 20px; box-shadow: 0 4px 15px rgba(255,255,255,0.2);
-        }
-
-        @media (min-width: 769px) { #pc-viewer { display: block; } #status-layer { display: none; } }
-        @media (max-width: 768px) { #mobile-viewer { display: block; } }
-    </style>
+    /* Убираем стандартные отступы у мобильных браузеров */
+    @media (max-width: 768px) {
+      .pdf-viewer {
+        height: 100vh;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-    <div id="status-layer">
-        <div class="loader" id="spinner"></div>
-        <div id="msg">Загрузка портфолио...</div>
-        <a href="portfolio.pdf" id="manual-btn" class="btn-fix">Открыть портфолио</a>
-    </div>
+  <embed src="portfolio.pdf#toolbar=0&navpanes=0&scrollbar=1" type="application/pdf" class="pdf-viewer" />
 
-    <iframe id="pc-viewer" src="portfolio.pdf"></iframe>
+  <script>
+    // Небольшой фикс для Safari на iPhone
+    if (!navigator.userAgent.match(/SamsungBrowser|Chrome|FreeWheel/i) && navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+      document.querySelector('embed').style.display = 'none';
+      var ifr = document.createElement('iframe');
+      ifr.src = "portfolio.pdf";
+      ifr.className = "pdf-viewer";
+      document.body.appendChild(ifr);
+    }
+  </script>
 
-    <div id="mobile-viewer"></div>
-
-    <script>
-        const pdfPath = 'portfolio.pdf'; // Файл должен называться именно так!
-
-        // Настройка PDF.js (чит: отключаем воркеры для стабильности на мобилках)
-        const pdfjsLib = window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc = ''; 
-
-        if (window.innerWidth <= 768) {
-            const container = document.getElementById('mobile-viewer');
-            const msg = document.getElementById('msg');
-            const spinner = document.getElementById('spinner');
-            const btn = document.getElementById('manual-btn');
-
-            // Если за 4 секунды не загрузилось — показываем кнопку
-            const fallbackTimer = setTimeout(() => {
-                btn.style.display = 'block';
-                spinner.style.display = 'none';
-                msg.innerText = "Файл тяжелый, подождите или нажмите кнопку:";
-            }, 4000);
-
-            // Рендерим PDF
-            pdfjsLib.getDocument(pdfPath).promise.then(pdf => {
-                clearTimeout(fallbackTimer);
-                document.getElementById('status-layer').style.display = 'none';
-                
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    pdf.getPage(i).then(page => {
-                        const canvas = document.createElement('canvas');
-                        const context = canvas.getContext('2d');
-                        const viewport = page.getViewport({ scale: 2 }); // Scale 2 для четкости на Retina-дисплеях
-
-                        canvas.width = viewport.width;
-                        canvas.height = viewport.height;
-                        container.appendChild(canvas);
-
-                        page.render({ canvasContext: context, viewport: viewport });
-                    });
-                }
-            }).catch(err => {
-                console.error(err);
-                msg.innerText = "Ошибка загрузки";
-                btn.style.display = 'block';
-            });
-        }
-    </script>
 </body>
+
 </html>
